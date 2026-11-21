@@ -15,3 +15,4 @@ skills/
 tests/
 next-env.d.ts
 .DS_Store
+.git-credentials
