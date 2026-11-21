@@ -57,6 +57,15 @@ ADMIN_KEY=lesson-admin-2026   # change before deploying
 - **Automated E2E**: with the dev server running, `python3 scripts/e2e_portal.py` — 28 checks covering form, admin auth, room creation, move validation, rejoin state, FEN setup, undo and permission guards.
 - **Game mirror check**: with the `repo-chess/` mirror (clone of `github.com/dvd2pe/chess`) beside the project, open **`/game-full`** — a dev-only read-only route serves the mirrored build. Verified end to end: full main menu, "Play with computer" starts a game, moves and AI replies work, zero failed network requests (see `VERIFICA-RUNTIME.md` in the mirror repo).
 
+## Data persistence (survives sandbox restarts)
+
+- Live DB: `db/custom.db` (SQLite, gitignored — mai nella repo pubblica, contiene dati degli studenti).
+- **Backup loop**: ogni 90 s snapshot consistente (API backup SQLite) in `backups/custom-latest.db.gz`; se il contenuto cambia viene pushato automaticamente sulla repo **privata** `dvd2pe/chess-lessons-data`.
+- **Restore al boot**: `scripts/db_boot.sh` (hook su `npm run dev` e `npm run start`) — se il DB è assente o vuoto, lo ripristina dallo snapshot locale o scaricandolo da GitHub. Recovery point massimo: ~90 s di dati.
+- **Token GitHub**: conservato nel remote `data` dentro `.git/config` (sopravvive ai riavvii, mai pushato); `.git-credentials` viene ricostruito al boot. Se anche `.git/` viene perso, reinserire il token: `git remote add data https://dvd2pe:<TOKEN>@github.com/dvd2pe/chess-lessons-data.git`.
+- Dati demo: `python3 scripts/seed_demo.py` (idempotente — non duplica).
+- In produzione su hosting cliente il filesystem persiste nativamente: il meccanismo resta attivo come backup extra. Per più istanze/processi valutare Postgres gestito (in Prisma basta cambiare `provider` nel datasource).
+
 ## API reference
 
 | Endpoint | Method | Auth | Purpose |
