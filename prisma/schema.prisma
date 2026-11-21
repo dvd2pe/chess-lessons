@@ -1,0 +1,37 @@
+// Prisma schema — Chess Lessons beta
+// Richieste di lezione + stanze private con link tokenizzati
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model LessonRequest {
+  id         String   @id @default(cuid())
+  studentName String
+  contact    String
+  level      String   // beginner | intermediate | advanced
+  notes      String?
+  status     String   @default("new") // new | assigned | scheduled | done
+  coachName  String?
+  roomId     String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model Room {
+  id           String   @id @default(cuid())
+  name         String
+  coachToken   String   @unique
+  studentToken String   @unique
+  coachName    String?
+  moves        String   @default("[]") // JSON array di mosse SAN
+  startFen     String?  // FEN di partenza personalizzata (setup coach)
+  avLink       String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
