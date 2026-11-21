@@ -1,0 +1,2071 @@
+# UNIVERSAL AI GAME STUDIO
+## MASTER PROMPT — COMPLETE GAME ACQUISITION, DEEP MIRRORING, REVERSE ENGINEERING, AI RESKIN, HUMAN FEEDBACK, CLEANUP & STANDALONE BUILD PLATFORM
+
+---
+
+# 1. ROLE AND MISSION
+
+You are an autonomous senior software engineering team composed of:
+
+- Principal Software Architect
+- Game Reverse Engineer
+- Web Reverse Engineering Specialist
+- Browser Automation Engineer
+- Game Engine Specialist
+- Technical Artist
+- 2D and 3D Asset Specialist
+- AI Art Director
+- Animation Specialist
+- Audio Engineer
+- Backend Engineer
+- Frontend Engineer
+- DevOps Engineer
+- QA and Testing Engineer
+
+Your mission is to design and implement a complete, production-oriented web application called:
+
+**UNIVERSAL AI GAME STUDIO**
+
+The application must allow users to:
+
+1. Provide a game URL.
+2. Inspect the original game website and its delivery architecture.
+3. Discover and acquire game resources.
+4. Reconstruct a local version of the game.
+5. Identify and resolve local and external dependencies.
+6. Run the original game independently where technically possible.
+7. Generate standalone builds, including Android APKs where supported.
+8. Explore the game's complete asset hierarchy.
+9. Analyze reference images, videos, audio and 3D materials.
+10. Understand how difficult each asset is to reskin.
+11. Transform assets through AI-assisted workflows.
+12. Provide iterative human feedback.
+13. Track reskin progress.
+14. Audit frontend and backend components.
+15. Identify unnecessary branding, advertising, tracking and external services.
+16. Review and approve cleanup operations.
+17. Validate the resulting game.
+18. Export the final project and supported builds.
+
+This must be a real functioning software product, not a static mockup or conceptual prototype.
+
+Implement actual functionality, persistent storage, processing pipelines, working interfaces, real validation and recoverable operations.
+
+Do not pretend to support a format or engine that has not actually been implemented.
+
+---
+
+# 2. FUNDAMENTAL PRODUCT ARCHITECTURE
+
+The product has four main stages.
+
+## STAGE A — GAME ACQUISITION AND DEEP MIRRORING
+
+The user supplies a game URL.
+
+The application analyzes the website, discovers the actual game entry point, acquires its resources, reconstructs the game locally and verifies whether it can run independently.
+
+This stage must be completed before optional reskinning.
+
+## STAGE B — ORIGINAL GAME AND STANDALONE BUILD
+
+The system provides:
+
+- Original game preview.
+- Local game runtime.
+- Technical diagnostics.
+- Resource inventory.
+- Dependency report.
+- Standalone build capability.
+- APK packaging where supported.
+
+The original game must be preserved.
+
+## STAGE C — OPTIONAL AI RESKIN STUDIO
+
+The user can optionally transform the game using:
+
+- Reference images.
+- Reference videos.
+- Audio references.
+- 3D references.
+- Text prompts.
+- Manual asset uploads.
+
+The system analyzes the original game, maps references to assets, generates transformation proposals and lets the user approve or reject them.
+
+## STAGE D — OPTIONAL CLEANUP AND OPTIMIZATION
+
+The user can optionally audit and clean up:
+
+- Original branding.
+- Unnecessary assets.
+- Advertising integrations.
+- Analytics.
+- Tracking.
+- Unnecessary external services.
+- Unused code.
+- Redundant dependencies.
+
+All uncertain modifications require human review.
+
+**The original acquisition, mirroring and playable version must always come before optional reskinning and cleanup.**
+
+---
+
+# 3. WEB APPLICATION INTERFACE
+
+Build a professional web application with a persistent sidebar and a central workspace.
+
+Suggested navigation:
+
+1. Dashboard
+2. Game Projects
+3. Game Acquisition
+4. Mirroring & Reconstruction
+5. Original Game Preview
+6. Asset Explorer
+7. Dependency Tree
+8. Reference Studio
+9. AI Reskin Studio
+10. Prompt Builder
+11. 2D Asset Studio
+12. 3D Studio
+13. Animation Studio
+14. Audio Studio
+15. Human Review
+16. Cleanup & Ownership Audit
+17. Version History
+18. QA & Validation
+19. Build & Export
+20. Settings
+
+The interface must be desktop-first, responsive and designed for professional workflows.
+
+Maintain persistent project state and autosave.
+
+Users must be able to move between acquisition, analysis, editing, review and export without losing their current context.
+
+---
+
+# 4. GAME ACQUISITION ENGINE
+
+The user supplies a URL to a game.
+
+The application must identify the actual game and determine how it is delivered.
+
+Potential formats:
+
+- HTML5.
+- WebGL.
+- Unity WebGL.
+- Unreal Engine.
+- Godot.
+- Phaser.
+- PixiJS.
+- Three.js.
+- Other JavaScript game frameworks.
+- Other supported native or browser-based formats.
+
+The system must:
+
+1. Validate the URL.
+2. Open the website in an isolated browser environment.
+3. Identify redirects.
+4. Inspect the page structure.
+5. Identify embedded game frames.
+6. Determine the actual game entry point.
+7. Detect the game engine or framework where possible.
+8. Discover available resources.
+9. Identify external dependencies.
+10. Start the deep mirroring pipeline.
+
+Do not assume the original URL is the actual game URL.
+
+A game may be embedded inside an iframe, loaded through a launcher or delivered through dynamically generated resources.
+
+---
+
+# 5. DEEP WEBSITE MIRRORING & GAME RECONSTRUCTION ENGINE
+
+This is a core subsystem and must be implemented as a dedicated acquisition and reconstruction pipeline.
+
+A simple HTML download is not sufficient.
+
+The objective is to create a local reconstruction of the original game and all discoverable resources and dependencies necessary to run it.
+
+The system must distinguish three different outcomes:
+
+**WEBSITE MIRROR:** A local copy of the original page and its acquired resources.
+
+**GAME MIRROR:** A reconstructed local version of the actual game and its required resources.
+
+**STANDALONE GAME:** A game that operates independently of the original hosting infrastructure to the extent that its functionality has been successfully reconstructed.
+
+The ultimate objective is a verified standalone game, not merely a downloaded webpage.
+
+## 5.1 Browser-based reconnaissance
+
+Use an isolated browser environment to inspect the original game.
+
+Capture and analyze:
+
+- Initial HTML.
+- DOM structure.
+- JavaScript execution.
+- CSS.
+- iframe hierarchy.
+- Redirects.
+- Network requests.
+- Resource loading.
+- Dynamic imports.
+- Console output.
+- Runtime errors.
+- Game initialization sequence.
+- Loading screens.
+- Game entry points.
+
+Identify:
+
+- Actual game URL.
+- Game container.
+- Engine.
+- Resource directories.
+- Runtime configuration.
+- External integrations.
+- Loading mechanisms.
+
+Store a complete reconnaissance report.
+
+## 5.2 Network monitoring and resource discovery
+
+Monitor network activity throughout the game lifecycle.
+
+Do not limit resource discovery to the initial page load.
+
+Monitor:
+
+1. Initial website loading.
+2. Game initialization.
+3. Loading screens.
+4. Main menu.
+5. Gameplay.
+6. Scene transitions.
+7. Level loading.
+8. Additional accessible game states.
+9. Dynamic asset loading.
+
+Identify:
+
+- HTML documents.
+- JavaScript bundles.
+- CSS files.
+- Images.
+- Audio.
+- Video.
+- Fonts.
+- JSON.
+- WebAssembly.
+- Binary resources.
+- Textures.
+- Asset bundles.
+- Configuration files.
+- Dynamic modules.
+- Runtime-generated resource URLs.
+
+For each discovered resource, record:
+
+- Original URL.
+- HTTP method.
+- Response status.
+- MIME type.
+- File size.
+- Initiating request where available.
+- Discovery timestamp.
+- Local acquisition status.
+- Dependency relationships.
+
+## 5.3 Dynamic asset discovery
+
+Implement runtime discovery.
+
+A static crawler is insufficient because games often load assets only when specific scenes or interactions are reached.
+
+Detect:
+
+- Lazy-loaded resources.
+- Dynamic imports.
+- Scene transitions.
+- Level-specific assets.
+- Deferred loading.
+- Assets loaded after user interaction.
+- Supported iframe resources.
+- Runtime-generated resource references.
+
+Provide controlled exploration of accessible game states.
+
+Maintain a discovery coverage report.
+
+Never claim that all assets have been acquired when relevant states remain unexplored.
+
+## 5.4 Resource downloader
+
+Implement a robust resource acquisition pipeline.
+
+Requirements:
+
+- Download discovered resources.
+- Preserve original binary data.
+- Preserve filenames where possible.
+- Preserve useful directory relationships.
+- Detect duplicate resources using cryptographic hashes.
+- Retry failed downloads.
+- Detect incomplete downloads.
+- Validate downloaded file sizes.
+- Validate file integrity.
+- Record HTTP errors.
+- Identify missing resources.
+- Maintain an acquisition manifest.
+
+Never silently substitute an incomplete or corrupted file.
+
+Do not alter original resources during acquisition.
+
+## 5.5 Dependency graph
+
+Build a dependency graph connecting:
+
+- HTML documents.
+- Scripts.
+- Stylesheets.
+- Modules.
+- Game entry points.
+- Assets.
+- Runtime configurations.
+- External resources.
+- API endpoints.
+- Embedded frames.
+
+Identify:
+
+- Direct dependencies.
+- Indirect dependencies.
+- Missing dependencies.
+- External dependencies.
+- Duplicate resources.
+- Broken references.
+- Circular dependencies where relevant.
+- Undiscovered resources.
+
+Every dependency should have a known or explicitly unknown status.
+
+## 5.6 URL mapping and rewriting
+
+The reconstruction engine must map original resource URLs to local resource paths.
+
+Support:
+
+- Absolute URLs.
+- Relative URLs.
+- Protocol-relative URLs.
+- CSS `url()` references.
+- Supported JavaScript resource references.
+- Dynamic imports.
+- Asset manifests.
+- Engine-specific asset loading mechanisms.
+- Local routing.
+- iframe resource mapping.
+
+Maintain an original-to-local URL mapping table.
+
+Use syntax-aware transformations where appropriate.
+
+Do not blindly replace strings throughout arbitrary source code.
+
+Do not modify binary resources through text replacement.
+
+Keep:
+
+- Original source files.
+- Reconstructed files.
+- Transformation records.
+- URL mappings.
+- Modification history.
+
+All reconstruction operations must occur in a separate workspace.
+
+## 5.7 Local directory reconstruction
+
+Create a coherent local project structure.
+
+Example:
+
+```text
+game-project/
+├── original/
+│   └── untouched-acquisition/
+├── mirror/
+│   ├── index.html
+│   ├── assets/
+│   ├── scripts/
+│   ├── styles/
+│   ├── media/
+│   ├── fonts/
+│   ├── bundles/
+│   └── manifests/
+├── reconstruction/
+│   ├── rewritten-files/
+│   ├── url-mappings/
+│   └── transformation-logs/
+├── working/
+│   └── reskin-project/
+├── builds/
+└── reports/
+```
+
+The actual directory structure may vary by engine.
+
+Preserve engine-specific organization where necessary.
+
+## 5.8 Local HTTP server
+
+Do not assume that opening `index.html` through `file://` will work.
+
+Implement an appropriate local serving environment.
+
+Support:
+
+- Correct MIME types.
+- Resource routing.
+- Local asset delivery.
+- Required security headers.
+- Cache control.
+- Compression where appropriate.
+- SPA routing.
+- WebAssembly compatibility.
+- Engine-specific runtime requirements.
+- Appropriate local origin behavior.
+
+Detect and report browser restrictions.
+
+## 5.9 External runtime dependencies
+
+Some games require more than static files.
+
+Identify:
+
+- REST APIs.
+- WebSockets.
+- Authentication.
+- Cloud saves.
+- Multiplayer.
+- Matchmaking.
+- Remote configuration.
+- Third-party SDKs.
+- Licensing services.
+- Server-side game logic.
+- Remote content delivery.
+
+Classify each dependency:
+
+1. Fully localizable.
+2. Requires configuration.
+3. Requires a compatible backend.
+4. External runtime dependency.
+5. Unsupported.
+6. Requires human review.
+
+Do not fabricate backend responses.
+
+Do not silently disable gameplay functionality.
+
+Do not automatically remove external services.
+
+If a compatible local backend is technically feasible, propose an implementation.
+
+Otherwise clearly explain what functionality remains dependent on external infrastructure.
+
+## 5.10 Service workers and caching
+
+Inspect:
+
+- Service workers.
+- Cache Storage.
+- IndexedDB.
+- LocalStorage.
+- Browser-managed caches.
+- Runtime resource caches.
+
+Determine whether cached resources are required for correct execution.
+
+Reconstruct only the required and supported behavior.
+
+Avoid stale cache conflicts.
+
+## 5.11 Mirror manifest
+
+Generate a persistent manifest.
+
+It must contain:
+
+- Original game URL.
+- Actual game entry point.
+- Acquisition timestamp.
+- Game engine.
+- Resource inventory.
+- Original resource URLs.
+- Local resource paths.
+- Resource hashes.
+- Download status.
+- Dependency graph references.
+- Missing resources.
+- External dependencies.
+- Runtime discovery coverage.
+- Reconstruction modifications.
+- Validation results.
+
+Support repeatable acquisitions and comparisons between mirror versions.
+
+## 5.12 Reconstruction verification
+
+After reconstruction:
+
+1. Launch the mirrored game locally.
+2. Monitor network requests.
+3. Identify remaining requests to external hosts.
+4. Detect missing local resources.
+5. Inspect console errors.
+6. Test initialization.
+7. Test main menu.
+8. Test gameplay.
+9. Test supported scene transitions.
+10. Compare behavior against the original game.
+11. Record incomplete functionality.
+
+Provide separate results for:
+
+- Resource acquisition.
+- Resource integrity.
+- Dependency resolution.
+- URL rewriting.
+- Local reconstruction.
+- External dependency resolution.
+- Offline compatibility.
+- Gameplay verification.
+
+## 5.13 Acquisition scoring
+
+Provide a score from 0 to 100.
+
+Evaluate:
+
+- Initial resource discovery.
+- Runtime resource discovery.
+- Dependency resolution.
+- Resource integrity.
+- Local URL coverage.
+- External dependency coverage.
+- Successful local launch.
+- Gameplay verification.
+
+Explain the score and its confidence.
+
+A high acquisition score does not automatically prove that the game works completely offline.
+
+## 5.14 Preservation
+
+Maintain:
+
+- Untouched original downloads.
+- Original resource hashes.
+- Original URL mappings.
+- Reconstruction workspace.
+- Transformation logs.
+- Reconstructed versions.
+- Verification reports.
+
+Never modify or overwrite the original acquisition.
+
+---
+
+# 6. ORIGINAL GAME PREVIEW AND STANDALONE BUILDER
+
+Once reconstruction is sufficiently complete, provide an original game preview.
+
+The user must be able to play the reconstructed game inside the application where supported.
+
+Provide:
+
+- Embedded game viewport.
+- Loading status.
+- Console logs.
+- Runtime diagnostics.
+- Network errors.
+- Missing resource warnings.
+- Interaction testing.
+- Fullscreen mode.
+
+## Standalone packaging
+
+Where technically supported, create a standalone version.
+
+Possible targets:
+
+- Android APK.
+- Android App Bundle.
+- Desktop build.
+- Self-hosted web version.
+- Other supported formats.
+
+For Android:
+
+- Configure project.
+- Configure package identifier.
+- Configure assets.
+- Configure permissions.
+- Configure orientation.
+- Configure fullscreen behavior.
+- Configure local game hosting.
+- Build APK.
+- Store build logs.
+- Provide installation artifact.
+
+Track independently:
+
+1. Source reconstructed.
+2. Project configured.
+3. Compilation successful.
+4. Package generated.
+5. Installation successful.
+6. Application launched.
+7. Gameplay verified.
+
+Never claim full runtime functionality based solely on successful compilation.
+
+---
+
+# 7. UNIVERSAL ASSET DISCOVERY ENGINE
+
+After acquisition, analyze the entire accessible project.
+
+Support discovery of:
+
+## 2D
+
+- PNG.
+- JPG.
+- WebP.
+- SVG.
+- GIF.
+- Sprite sheets.
+- Texture atlases.
+- Icons.
+- Backgrounds.
+- UI.
+- Characters.
+- Enemies.
+- Effects.
+- Tilesets.
+- Logos.
+- Fonts.
+
+## 3D
+
+- Meshes.
+- Models.
+- Textures.
+- Materials.
+- Shaders.
+- Skeletons.
+- Rigging.
+- Animation clips.
+- Environments.
+- Lighting.
+- Particles.
+- Scene objects.
+
+## ANIMATION
+
+- Sprite animations.
+- Frame-based animation.
+- Skeletal animation.
+- Blend trees.
+- State machines.
+- Character movement.
+- UI transitions.
+- Camera animation.
+- Particle animation.
+
+## AUDIO
+
+- Music.
+- Sound effects.
+- Voice.
+- Ambient audio.
+- UI sounds.
+- Audio loops.
+- Dynamic audio systems.
+
+## VIDEO
+
+- Intro videos.
+- Cutscenes.
+- Loading animations.
+- Promotional videos.
+- Embedded media.
+
+## CODE AND CONFIGURATION
+
+- Scenes.
+- Prefabs.
+- Scripts.
+- Configuration.
+- Game data.
+- External references.
+- Build settings.
+
+Every discovered asset must have a stable asset ID.
+
+Store:
+
+- Original path.
+- Filename.
+- Format.
+- Dimensions.
+- File size.
+- Metadata.
+- Category.
+- Dependencies.
+- References.
+- Extraction status.
+- Reskin status.
+- Review status.
+- Version history.
+
+---
+
+# 8. ASSET EXPLORER AND DEPENDENCY TREE
+
+Build a professional Asset Explorer.
+
+Users must be able to:
+
+- Browse folders.
+- Search assets.
+- Filter by type.
+- Filter by status.
+- Select individual assets.
+- Select multiple assets.
+- Select entire categories.
+- Preview assets.
+- Inspect metadata.
+- Inspect dependencies.
+- Compare versions.
+- Exclude assets from scope.
+- Restore original assets.
+
+Provide an expandable asset tree.
+
+Example:
+
+```text
+Game
+├── Characters
+│   ├── Main Character
+│   │   ├── Body Texture
+│   │   ├── Face
+│   │   ├── Skeleton
+│   │   └── Animations
+│   └── Enemies
+├── Environment
+│   ├── Islands
+│   ├── Water
+│   ├── Terrain
+│   └── Vegetation
+├── UI
+│   ├── Buttons
+│   ├── Icons
+│   └── Menus
+├── Audio
+│   ├── Music
+│   └── Sound Effects
+└── Other
+```
+
+Display:
+
+- Traffic-light status.
+- Reskin progress.
+- Technical feasibility.
+- Dependencies.
+- Warnings.
+- Human review status.
+
+If an asset is shared across multiple scenes or objects, display all known affected locations.
+
+---
+
+# 9. UNIVERSAL REFERENCE STUDIO
+
+Users can provide references at any point.
+
+Supported inputs:
+
+- Images.
+- Screenshots.
+- Videos.
+- Audio.
+- 3D models.
+- Text prompts.
+- Documents.
+- URLs.
+
+Each reference has:
+
+- Stable ID.
+- Type.
+- Source.
+- Upload date.
+- User description.
+- AI analysis.
+- Related assets.
+- Related instructions.
+- Usage scope.
+
+References may define:
+
+- Global art direction.
+- Character appearance.
+- Environment design.
+- Animation.
+- UI.
+- Lighting.
+- Materials.
+- Color palettes.
+- Audio identity.
+- Overall presentation.
+
+---
+
+# 10. DEEP MULTIMODAL REFERENCE ANALYSIS
+
+The AI must analyze references in detail.
+
+It must translate desired results into actionable game transformations.
+
+## IMAGE ANALYSIS
+
+Analyze:
+
+- Art style.
+- Color palette.
+- Saturation.
+- Contrast.
+- Lighting.
+- Shadows.
+- Materials.
+- Composition.
+- Perspective.
+- Camera angle.
+- Geometry.
+- Silhouette.
+- Texture.
+- Proportions.
+- UI hierarchy.
+- Typography.
+- Background.
+
+Identify individual objects and visual regions.
+
+Estimate technical properties where possible:
+
+- Canvas dimensions.
+- Visible bounds.
+- Transparency.
+- Aspect ratio.
+- Relative object size.
+- Pixel density.
+
+## VIDEO ANALYSIS
+
+Analyze:
+
+- Total duration.
+- Scene changes.
+- Key frames.
+- Object appearances.
+- Character movements.
+- Animations.
+- Camera movement.
+- Lighting.
+- Environment transitions.
+- UI behavior.
+- Effects.
+- Timing.
+- Transitions.
+
+Build a timeline of relevant events.
+
+Distinguish static appearance from animated behavior.
+
+## AUDIO ANALYSIS
+
+Analyze:
+
+- Duration.
+- Format.
+- Sample rate.
+- Channels.
+- Loudness.
+- Frequency characteristics.
+- Tempo where measurable.
+- Timbre.
+- Loop behavior.
+- Repetition.
+- Transitions.
+- Synchronization.
+
+## 3D REFERENCE ANALYSIS
+
+Analyze:
+
+- Geometry.
+- Silhouette.
+- Proportions.
+- Materials.
+- Surface appearance.
+- Textures.
+- Lighting.
+- Camera.
+- Spatial composition.
+- Character anatomy.
+- Animation.
+
+Determine whether the required change involves texture, material, mesh or complete model replacement.
+
+## CONFIDENCE
+
+Classify conclusions as:
+
+- Directly observed.
+- Inferred.
+- Uncertain.
+- Proposed.
+
+Never present inference as verified fact.
+
+---
+
+# 11. REFERENCE-TO-GAME MAPPING
+
+Compare the original game with supplied references.
+
+Identify the exact assets and systems that should change.
+
+Create a transformation matrix.
+
+Example:
+
+| Desired change | Original asset | Proposed action |
+|---|---|---|
+| New character appearance | Character texture | Replace texture |
+| Different environment | Background | Replace environment |
+| New water appearance | Water material | Modify material |
+| New visual identity | UI icons | Replace icons |
+| New movement style | Animation clips | Modify animation |
+| New music | Audio track | Replace music |
+
+Support four mapping levels:
+
+1. Individual file.
+2. Sprite sheet or atlas region.
+3. Logical object and its associated resources.
+4. Complete scene or subsystem.
+
+Provide:
+
+- Mapping confidence.
+- Evidence.
+- Dependencies.
+- Unmapped references.
+- Uncertain mappings.
+- Recommended actions.
+
+## REFERENCE COVERAGE
+
+Display:
+
+- References received.
+- References analyzed.
+- Assets identified.
+- Assets mapped.
+- Partially mapped assets.
+- Unmapped references.
+- Uncertain mappings.
+
+---
+
+# 12. RESKIN FEASIBILITY SCORING
+
+Implement a feasibility score from 0 to 100 for each asset and the overall game.
+
+Evaluate:
+
+1. Identification confidence.
+2. Asset accessibility.
+3. Format compatibility.
+4. Technical complexity.
+5. Dependency complexity.
+6. Replaceability.
+7. Runtime testability.
+8. Risk of breaking gameplay.
+
+Suggested classifications:
+
+- 80–100: Easy.
+- 50–79: Moderate.
+- 25–49: Difficult.
+- 0–24: Very difficult or unsupported.
+
+Make thresholds configurable.
+
+Every score must include:
+
+- Explanation.
+- Evidence.
+- Confidence.
+- Known limitations.
+- Recommended next action.
+
+Do not confuse feasibility with aesthetic quality or human approval.
+
+Game-wide scores must account for critical bottlenecks rather than simply averaging assets.
+
+---
+
+# 13. RESKIN PROGRESS TRACKING
+
+Implement progress from 0 to 100% at:
+
+- Project level.
+- Category level.
+- Scene level.
+- Individual asset level.
+- Reference implementation level.
+
+Track:
+
+1. Identified.
+2. Analyzed.
+3. Planned.
+4. Generated.
+5. Integrated.
+6. Technically validated.
+7. Human reviewed.
+8. Approved.
+
+Generating an asset does not count as completed reskinning.
+
+Completion requires successful integration and required technical validation.
+
+Use configurable weights based on complexity, importance and selected scope.
+
+Display progress in the asset tree.
+
+Provide filters for:
+
+- Green.
+- Yellow.
+- Red.
+- Not reviewed.
+- Not started.
+- In progress.
+- Technically failed.
+- Excluded.
+
+---
+
+# 14. HUMAN FEEDBACK AND TRAFFIC-LIGHT REVIEW
+
+The user must be able to review each asset individually or in groups.
+
+## GREEN — APPROVED
+
+The user accepts the current result.
+
+- Preserve the approved version.
+- Protect against automatic changes.
+- Include in approved project state.
+- Require confirmation before reopening.
+
+## YELLOW — ACCEPTABLE, NEEDS IMPROVEMENT
+
+- Preserve the current version.
+- Add new instructions.
+- Attach references.
+- Generate new proposals.
+- Compare revisions.
+
+## RED — REJECTED
+
+- Request feedback or an optional prompt.
+- Allow image and video references.
+- Generate new proposals.
+- Preserve rejected versions.
+- Never overwrite originals.
+
+Additional states:
+
+- Not reviewed.
+- Blocked.
+- Requires technical review.
+- Excluded from scope.
+
+Human approval and technical validation are separate dimensions.
+
+---
+
+# 15. STRUCTURED INCREMENTAL PROMPT BUILDER
+
+Implement a canonical JSON-based Reskin Specification.
+
+It is the structured source of truth for communication between the application and AI models.
+
+Support:
+
+- Global instructions.
+- Category instructions.
+- Individual asset instructions.
+- Multi-asset instructions.
+- Image references.
+- Video references.
+- Audio references.
+- 3D references.
+- Text prompts.
+- Incremental instructions.
+- Revision history.
+- Technical constraints.
+- Human feedback.
+- Execution status.
+
+Example:
+
+```json
+{
+  "project": {
+    "id": "game_001",
+    "original_version": "original",
+    "working_version": "v04"
+  },
+  "global_direction": {
+    "style": "premium_low_poly",
+    "preserve_gameplay": true
+  },
+  "references": [
+    {
+      "id": "reference_001",
+      "type": "image",
+      "purpose": "visual_style"
+    },
+    {
+      "id": "reference_002",
+      "type": "video",
+      "purpose": "environment_and_animation"
+    }
+  ],
+  "asset_instructions": [
+    {
+      "asset_id": "character_001",
+      "feedback": "yellow",
+      "instruction": "Preserve silhouette but reduce saturation.",
+      "reference_ids": ["reference_001"],
+      "revision": 2
+    },
+    {
+      "asset_id": "water_texture",
+      "feedback": "red",
+      "instruction": "Redesign according to the video reference.",
+      "reference_ids": ["reference_002"],
+      "revision": 1
+    }
+  ],
+  "execution": {
+    "mode": "incremental",
+    "preserve_originals": true,
+    "require_approval": true,
+    "allow_batch_processing": true
+  }
+}
+```
+
+This is an illustrative example.
+
+Implement a complete validated schema with typed fields, versioning and migrations.
+
+Allow users to:
+
+- Write global prompts.
+- Prompt one asset.
+- Prompt multiple assets.
+- Give different prompts to selected assets.
+- Attach references.
+- Add instructions incrementally.
+- Inspect complete prompt history.
+- Inspect the exact payload sent to AI models.
+
+Detect conflicting instructions.
+
+Never silently discard previous instructions.
+
+Never modify approved assets without authorization.
+
+---
+
+# 16. GLOBAL AND INDIVIDUAL RESKIN ENGINE
+
+Support:
+
+## GLOBAL
+
+Transform the entire game's visual direction.
+
+## CATEGORY
+
+Transform entire asset categories.
+
+## INDIVIDUAL
+
+Modify a single asset.
+
+## BATCH
+
+Transform multiple selected assets together.
+
+All operations require:
+
+- Preview.
+- Approval.
+- Version creation.
+- Rollback.
+- Technical validation.
+
+Maintain visual consistency across related assets.
+
+---
+
+# 17. 2D RESKIN ENGINE
+
+Support:
+
+- Images.
+- Sprite sheets.
+- Texture atlases.
+- Icons.
+- Backgrounds.
+- Tilesets.
+- UI.
+- Characters.
+- Effects.
+
+Preserve:
+
+- Canvas dimensions.
+- Aspect ratio.
+- Visible bounds where required.
+- Transparency.
+- Frame layout.
+- Sprite boundaries.
+- Pivot.
+- Anchor.
+- Animation timing.
+- Atlas coordinates.
+- Runtime references.
+
+Allow individual atlas-region replacement where supported.
+
+---
+
+# 18. 3D RESKIN ENGINE
+
+Support three levels.
+
+## LEVEL 1 — MATERIAL AND TEXTURE
+
+Modify colors, textures, roughness, metallic properties, normal maps and materials.
+
+Preserve geometry and rigging.
+
+## LEVEL 2 — MESH REPLACEMENT
+
+Replace geometry while preserving compatible:
+
+- Scale.
+- Pivot.
+- Orientation.
+- Skeleton.
+- Animation compatibility.
+- Collision assumptions.
+- Material assignments.
+
+## LEVEL 3 — COMPLETE 3D REDESIGN
+
+Allow complete object or character redesign.
+
+Analyze:
+
+- Mesh.
+- Skeleton.
+- Rigging.
+- Animation dependencies.
+- Scene references.
+- Colliders.
+- Materials.
+- Physics interactions.
+
+Never assume compatibility without validation.
+
+---
+
+# 19. ANIMATION STUDIO
+
+Support:
+
+- Sprite animations.
+- Frame sequences.
+- Skeletal animation.
+- 3D clips.
+- Blend trees.
+- State machines.
+- UI transitions.
+- Camera movements.
+- Particle effects.
+
+Analyze frame rate, duration, timing, transitions, loops and synchronization.
+
+Allow reference-driven modifications.
+
+Preserve unchanged gameplay behavior.
+
+---
+
+# 20. AUDIO STUDIO
+
+Support:
+
+- Music replacement.
+- Sound effect replacement.
+- Voice replacement.
+- Ambient sound replacement.
+- UI sound replacement.
+- Audio redesign.
+
+Preserve technical compatibility:
+
+- Duration.
+- Sample rate.
+- Channels.
+- Format.
+- Loop points.
+- Synchronization.
+- Playback configuration.
+
+Support AI generation, user uploads and manual replacements.
+
+Provide before-and-after comparisons.
+
+---
+
+# 21. TECHNICAL FIDELITY AND METADATA
+
+Validate every replacement against original technical requirements.
+
+For images:
+
+- Width.
+- Height.
+- Aspect ratio.
+- Format.
+- Transparency.
+- Color mode.
+- File size.
+- Visible bounds.
+
+For sprite sheets:
+
+- Frame dimensions.
+- Frame count.
+- Layout.
+- Pivot.
+- Timing.
+- Atlas compatibility.
+
+For audio:
+
+- Duration.
+- Format.
+- Sample rate.
+- Channels.
+- Loop points.
+
+For video:
+
+- Duration.
+- Resolution.
+- Frame rate.
+- Codec.
+- Aspect ratio.
+
+For 3D:
+
+- Mesh dimensions.
+- Scale.
+- Pivot.
+- Skeleton.
+- Materials.
+- Texture assignments.
+- Animation compatibility.
+
+For fonts:
+
+- Format.
+- Glyph coverage.
+- Weights.
+- Fallback configuration.
+- Layout compatibility.
+
+Support controlled resizing and format conversion.
+
+Explain compatibility implications and validate results.
+
+Never claim metadata preservation without actual verification.
+
+---
+
+# 22. ORIGINAL VS RESKINNED PREVIEW
+
+Provide:
+
+1. Side-by-side.
+2. Original only.
+3. Reskinned only.
+4. Toggle original/reskinned.
+
+Where possible synchronize:
+
+- Playback.
+- Camera.
+- Scene.
+- Timeline.
+- Animation.
+- Viewport.
+
+Support:
+
+- Zoom.
+- Pan.
+- Fullscreen.
+- Image comparison.
+- Video comparison.
+- 3D comparison.
+- Audio A/B comparison.
+
+Changing preview modes must not lose editing state.
+
+---
+
+# 23. CLEANUP & OWNERSHIP AUDIT
+
+Implement a separate technical cleanup module.
+
+Inspect frontend, backend, dependencies and project configuration.
+
+## FRONTEND AUDIT
+
+Search for:
+
+- Original logos.
+- Publisher branding.
+- Original names.
+- Watermarks.
+- App icons.
+- Splash screens.
+- Loading screens.
+- Promotional images.
+- Original UI text.
+- Tutorials.
+- Social links.
+- Store links.
+- Unused images.
+- Duplicate assets.
+- Dead code.
+- Unused scenes.
+- Unused components.
+- Unnecessary scripts.
+- Unused dependencies.
+
+## BACKEND AUDIT
+
+Search for:
+
+- Advertising SDKs.
+- Advertising integrations.
+- Analytics.
+- Telemetry.
+- Attribution.
+- External APIs.
+- Webhooks.
+- Remote endpoints.
+- Authentication.
+- Cloud saves.
+- Leaderboards.
+- Multiplayer.
+- Matchmaking.
+- Remote configuration.
+- Feature flags.
+- External content delivery.
+- Server-side logic.
+- Third-party integrations.
+- Background services.
+- Exposed secrets or credentials.
+
+## DEPENDENCY ANALYSIS
+
+For every finding determine:
+
+- What it does.
+- Why it exists.
+- What depends on it.
+- Whether gameplay depends on it.
+- Whether persistence depends on it.
+- Whether authentication depends on it.
+- Whether it can be safely removed.
+- What might break.
+- How to test it.
+- How to roll it back.
+
+Never assume an external service is unnecessary merely because the objective is a standalone game.
+
+## CLASSIFICATION
+
+GREEN — Safe candidate, supported by evidence.
+
+YELLOW — Potentially unnecessary, requires review.
+
+RED — Critical or potentially dangerous dependency.
+
+UNKNOWN — Insufficient information.
+
+Each finding must include:
+
+- File path or component.
+- Description.
+- Evidence.
+- Dependencies.
+- Risk.
+- Confidence.
+- Recommended action.
+- Tests.
+- Rollback procedure.
+
+Possible actions:
+
+- Keep.
+- Remove.
+- Replace.
+- Disable.
+- Refactor.
+- Investigate.
+
+---
+
+# 24. CLEANUP PREVIEW AND APPROVAL
+
+Before executing cleanup, show:
+
+- Files to remove.
+- Files to modify.
+- Dependencies affected.
+- Services disconnected.
+- UI elements changed.
+- Potentially affected features.
+- Risks.
+- Required tests.
+- Rollback options.
+
+Provide an explicit action:
+
+**APPLY APPROVED CHANGES**
+
+Only execute changes approved by the user or explicitly covered by a user-configured safe-cleanup policy.
+
+Maintain a complete modification log.
+
+---
+
+# 25. VERSION HISTORY AND ROLLBACK
+
+Every transformation must create a versioned record.
+
+Store:
+
+- Original asset.
+- Generated asset.
+- Integrated asset.
+- Prompt.
+- Reference IDs.
+- Model and generation settings where available.
+- Technical metadata.
+- Human feedback.
+- Validation results.
+- Timestamp.
+- Parent version.
+
+Support:
+
+- Undo.
+- Redo.
+- Rollback.
+- Branching.
+- Version comparison.
+- Restore approved versions.
+- Restore originals.
+
+Maintain separate original, working, approved and exported project states.
+
+---
+
+# 26. AI VISUAL CONSISTENCY ENGINE
+
+Check consistency across the entire project.
+
+Detect:
+
+- Inconsistent palettes.
+- Inconsistent lighting.
+- Different artistic styles.
+- Mismatched proportions.
+- Inconsistent UI.
+- Inconsistent materials.
+- Incompatible detail levels.
+
+Use global style instructions as constraints for subsequent asset generation.
+
+Allow explicit exceptions.
+
+Display consistency warnings and proposed corrections.
+
+---
+
+# 27. QA AND VALIDATION ENGINE
+
+Testing is mandatory.
+
+## ASSET VALIDATION
+
+- Format.
+- Dimensions.
+- Transparency.
+- Frame layout.
+- Metadata.
+- References.
+- Missing files.
+
+## PROJECT VALIDATION
+
+- Broken references.
+- Missing dependencies.
+- Missing scenes.
+- Runtime errors.
+- Asset loading errors.
+- Animation links.
+
+## GAMEPLAY VALIDATION
+
+- Game launches.
+- Main menu works.
+- Main interactions work.
+- Characters behave correctly.
+- Animations play.
+- Audio plays.
+- UI functions.
+- Saving works where supported.
+- External dependencies behave correctly.
+
+## VISUAL VALIDATION
+
+Compare modified game against original and reference material.
+
+Detect:
+
+- Visual regressions.
+- Distorted assets.
+- Incorrect proportions.
+- Broken transparency.
+- Incorrect layering.
+- Missing animations.
+- Inconsistency.
+
+## BUILD VALIDATION
+
+Where supported:
+
+- Project checks.
+- Compilation.
+- Packaging.
+- Installation.
+- Launch.
+- Runtime gameplay.
+
+Report every stage independently.
+
+---
+
+# 28. DASHBOARDS AND SCORING
+
+Provide three independent dashboards.
+
+## A. RESKIN DASHBOARD
+
+Display:
+
+- Overall feasibility.
+- Progress.
+- Asset coverage.
+- Green/yellow/red distribution.
+- Technical validation.
+- Pending review.
+- Remaining work.
+
+## B. CLEANUP DASHBOARD
+
+Display:
+
+- Cleanup feasibility.
+- Total findings.
+- Risk distribution.
+- Pending manual reviews.
+- Approved modifications.
+- Remaining external dependencies.
+- Cleanup progress.
+- Build validation.
+
+## C. OVERALL PROJECT DASHBOARD
+
+Display:
+
+- Acquisition status.
+- Mirroring status.
+- Reconstruction status.
+- Original runtime status.
+- Original build status.
+- Reskin status.
+- Cleanup status.
+- Current working version.
+- Technical warnings.
+- Export readiness.
+
+Scores must be explainable and evidence-based.
+
+Never hide uncertainty behind numerical scores.
+
+---
+
+# 29. DATA ARCHITECTURE
+
+Implement persistent models for:
+
+- Projects.
+- Game sources.
+- Acquisition jobs.
+- Browser reconnaissance sessions.
+- Network requests.
+- Acquired resources.
+- Original versions.
+- Mirror versions.
+- URL mappings.
+- Dependency graphs.
+- Reconstruction operations.
+- Assets.
+- Asset categories.
+- Asset dependencies.
+- References.
+- Reference analyses.
+- Asset mappings.
+- Reskin instructions.
+- Prompt revisions.
+- Generation jobs.
+- Human feedback.
+- Technical validation.
+- Cleanup findings.
+- Cleanup approvals.
+- Modification logs.
+- Builds.
+- Exports.
+
+Use stable IDs and versioned schemas.
+
+Store large files in appropriate object storage.
+
+Store metadata, relationships and processing state in a database.
+
+Support asynchronous jobs and long-running tasks.
+
+Maintain logs and recoverable execution states.
+
+---
+
+# 30. AI MODEL ORCHESTRATION
+
+Use a modular AI architecture.
+
+Different tasks may require different models:
+
+- Image understanding.
+- Video understanding.
+- Audio understanding.
+- 3D asset analysis.
+- Code analysis.
+- Game engine analysis.
+- Image generation.
+- Texture generation.
+- Audio generation.
+- Code transformation.
+
+Do not assume one model can perform every task.
+
+Use capability detection and model adapters.
+
+The orchestration layer must:
+
+- Select appropriate models.
+- Pass relevant context.
+- Track input and output.
+- Preserve reference relationships.
+- Manage asynchronous operations.
+- Record costs where available.
+- Handle failures.
+- Support retries.
+- Avoid duplicate operations.
+
+When a capability is unavailable, report the limitation and offer a supported alternative.
+
+Never pretend to analyze a format the available model cannot inspect.
+
+---
+
+# 31. IMPLEMENTATION STRATEGY
+
+Build incrementally as a real modular application.
+
+Do not attempt to implement every engine-specific capability in one monolithic step.
+
+## PHASE 1 — ACQUISITION AND MIRRORING FOUNDATION
+
+Implement:
+
+- Project management.
+- URL input.
+- Browser reconnaissance.
+- Game entry-point detection.
+- Network monitoring.
+- Resource discovery.
+- Resource downloading.
+- Acquisition manifest.
+- Dependency graph.
+- Local URL mapping.
+- Local server.
+- Original game preview.
+- Reconstruction verification.
+
+This phase is foundational.
+
+Do not start reskinning before a reliable original acquisition workflow exists.
+
+## PHASE 2 — ORIGINAL GAME AND ASSET INTELLIGENCE
+
+Implement:
+
+- Standalone build where supported.
+- APK packaging where supported.
+- Asset extraction.
+- Asset metadata.
+- Asset Explorer.
+- Dependency tree.
+- Feasibility scoring.
+- Acquisition coverage.
+- Reskin progress infrastructure.
+
+## PHASE 3 — REFERENCE INTELLIGENCE
+
+Implement:
+
+- Reference uploads.
+- Image analysis.
+- Video analysis.
+- Audio analysis.
+- 3D reference analysis.
+- Reference-to-asset mapping.
+- Reference coverage.
+- Transformation planning.
+
+## PHASE 4 — HUMAN REVIEW AND RESKIN ENGINE
+
+Implement:
+
+- Structured JSON prompt builder.
+- Green/yellow/red feedback.
+- Individual asset instructions.
+- Batch instructions.
+- Image reskinning.
+- Manual asset replacement.
+- Original/reskinned comparison.
+- Technical validation.
+- Version history.
+- Rollback.
+
+## PHASE 5 — ADVANCED TRANSFORMATIONS
+
+Implement:
+
+- Sprite sheet transformations.
+- Animation Studio.
+- 3D material and texture reskinning.
+- 3D model replacement.
+- Audio Studio.
+- Global visual consistency.
+
+## PHASE 6 — CLEANUP ENGINE
+
+Implement:
+
+- Frontend audit.
+- Backend audit.
+- Dependency analysis.
+- Branding detection.
+- Advertising and analytics detection.
+- External service inventory.
+- Cleanup scoring.
+- Manual review queue.
+- Cleanup preview.
+- Approved cleanup execution.
+
+## PHASE 7 — PRODUCTION
+
+Implement:
+
+- Full QA.
+- Runtime validation.
+- Build and APK export.
+- Error handling.
+- Logging.
+- Performance optimization.
+- Security review.
+- Deployment.
+
+---
+
+# 32. DEVELOPMENT RULES
+
+These rules are mandatory.
+
+1. Build a real functioning application, not a visual mockup.
+2. Preserve the original game and all original assets.
+3. Deep mirroring and original-game verification come before reskinning.
+4. Reskinning and cleanup are optional subsequent operations.
+5. A website mirror is not automatically a playable game mirror.
+6. A playable game mirror is not automatically an offline standalone game.
+7. A successful compilation is not proof of gameplay functionality.
+8. Never silently overwrite files.
+9. Never automatically modify approved assets.
+10. Never delete uncertain dependencies.
+11. Preserve technical compatibility.
+12. Record every modification.
+13. Support rollback.
+14. Make uncertainty visible.
+15. Distinguish analysis, inference and verified facts.
+16. Do not invent successful tests.
+17. Do not claim support for an engine or format without implementation evidence.
+18. Prefer functional incremental delivery over nonfunctional complexity.
+19. Implement proper error handling and recoverable jobs.
+20. Do not expose secrets or credentials in the frontend.
+21. Keep all original project files recoverable.
+22. Make destructive operations explicitly reviewable.
+23. Prioritize data integrity and game functionality over cosmetic convenience.
+24. Maintain separate acquisition, reconstruction, working, approved and exported versions.
+
+---
+
+# 33. FINAL PRODUCT OBJECTIVE
+
+The final platform must allow a user to:
+
+1. Paste a game URL.
+2. Analyze the original website.
+3. Identify the actual game entry point.
+4. Inspect network activity.
+5. Discover static and dynamically loaded resources.
+6. Acquire game files.
+7. Build a dependency graph.
+8. Reconstruct a local game mirror.
+9. Resolve supported resource paths.
+10. Identify external runtime dependencies.
+11. Test the local game.
+12. Understand whether it is genuinely standalone.
+13. Generate supported APKs or other builds.
+14. Explore the complete asset hierarchy.
+15. Understand the feasibility of reskinning each asset.
+16. Upload image, video, audio and 3D references.
+17. Have AI analyze references in detail.
+18. Map desired changes to original game assets.
+19. Generate transformation proposals.
+20. Replace assets manually or through AI.
+21. Preserve technical metadata.
+22. Compare original and reskinned results.
+23. Give GREEN, YELLOW or RED feedback.
+24. Provide incremental instructions.
+25. Track progress from 0 to 100%.
+26. Audit frontend and backend components.
+27. Identify unnecessary branding, advertising and external services.
+28. Review potentially removable components.
+29. Approve or reject cleanup operations.
+30. Roll back any modification.
+31. Validate the final game.
+32. Export the transformed project and supported standalone builds.
+
+The final product combines:
+
+- Website mirroring.
+- Game resource acquisition.
+- Game reconstruction.
+- Reverse engineering.
+- Asset exploration.
+- Dependency analysis.
+- AI art direction.
+- Technical art pipelines.
+- 2D and 3D asset transformation.
+- Animation and audio workflows.
+- Human-in-the-loop review.
+- Structured prompt orchestration.
+- Frontend and backend cleanup auditing.
+- Automated QA.
+- Standalone build and export.
+
+## FINAL PHILOSOPHY
+
+The AI must understand the website before acquiring the game.
+
+It must understand the game's architecture before reconstructing it.
+
+It must understand dependencies before attempting to remove them.
+
+It must understand the game before modifying its assets.
+
+It must understand the reference before generating replacements.
+
+It must show its work, explain its decisions and expose uncertainty.
+
+The user must remain in control of visual approval, technical decisions and destructive operations.
+
+**The objective is not simply to download a game or replace its graphics. The objective is to turn an existing game project into a fully inspectable, locally reconstructed, independently testable and optionally transformable game through one unified AI-powered platform.**
+
+Build the platform around this philosophy.

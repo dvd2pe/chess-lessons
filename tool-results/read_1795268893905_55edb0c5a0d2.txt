@@ -1,0 +1,744 @@
+     1→<!DOCTYPE html>
+     2→<html lang="en">
+     3→
+     4→<head>
+     5→    <meta name="sm-build-id" content="bundle-03ebca09">
+     6→    <script type="text/javascript">
+     7→        ;
+     8→        (function runBundleLoadingRecoveryBootstrap(config, injected = {}) {
+     9→            const BRIDGE_VERSION = 1;
+    10→            const DEDUPE_KEY = 'sm_bundle_recovery_v1_dedupe';
+    11→            const PENDING_KEY = 'sm_bundle_recovery_v1_pending';
+    12→            const RELOAD_KEY = 'sm_bundle_recovery_v1_reload';
+    13→            const RELOAD_PARAM = '_sm_bundle_reload';
+    14→            const CHECK_PARAM = '_sm_bundle_check';
+    15→            const DEFAULT_TTL = 24 * 60 * 60 * 1000;
+    16→            const DEFAULT_QUEUE_LIMIT = 20;
+    17→            const DEDUPE_LIMIT = 100;
+    18→            const COMPONENT_LIMIT = 80;
+    19→            const METADATA_KEY_LIMIT = 40;
+    20→            const METADATA_VALUE_LIMIT = 100;
+    21→            const FALLBACK_ID = 'sm-bundle-loading-recovery-fallback';
+    22→            const FAILURE_TYPES = ['lazy_import', 'main_bundle', 'vite_preload', 'script_asset', 'modulepreload_asset', 'stylesheet_asset', 'worker_asset', 'unknown', ];
+    23→            const ASSET_KINDS = ['script', 'modulepreload', 'stylesheet', 'worker', 'component', 'unknown', ];
+    24→            const ACTIONS = ['none', 'auto_reload', 'player_reload', 'continue', 'guard_blocked', 'unavailable', ];
+    25→            const globalObject = injected.window || (typeof window !== 'undefined' ? window : undefined);
+    26→            const documentObject = injected.document || globalObject ? .document;
+    27→            const locationObject = injected.location || globalObject ? .location;
+    28→            const fetchFunction = injected.fetch || (typeof globalObject ? .fetch === 'function' ? globalObject.fetch.bind(globalObject) : undefined);
+    29→            const now = injected.now || (() => Date.now());
+    30→            const schedule = injected.setTimeout || globalObject ? .setTimeout ? .bind(globalObject) || setTimeout;
+    31→            const navigate = injected.navigate || ((url) => {
+    32→                locationObject ? .replace(url);
+    33→            });
+    34→            const ttl = Number.isFinite(config.pendingTtlMs) && Number(config.pendingTtlMs) > 0 ? Number(config.pendingTtlMs) : DEFAULT_TTL;
+    35→            const queueLimit = Number.isInteger(config.pendingQueueLimit) && Number(config.pendingQueueLimit) > 0 ? Math.min(Number(config.pendingQueueLimit), DEFAULT_QUEUE_LIMIT) : DEFAULT_QUEUE_LIMIT;
+    36→            if (!globalObject || !documentObject || !locationObject) return undefined;
+    37→            const isSafeBuildId = (value) => typeof value === 'string' && /^[A-Za-z0-9._-]{1,128}$/.test(value);
+    38→            if (!isSafeBuildId(config.currentBuildId)) return undefined;
+    39→            const existingBridge = globalObject.__SM_BUNDLE_RECOVERY__;
+    40→            if (existingBridge ? .version === BRIDGE_VERSION && existingBridge.currentBuildId === config.currentBuildId) {
+    41→                return existingBridge;
+    42→            }
+    43→            const URLConstructor = globalObject.URL || URL;
+    44→            const memoryStorage = new Map();
+    45→            let sessionStorageObject = injected.storage;
+    46→            if (sessionStorageObject === undefined) {
+    47→                try {
+    48→                    sessionStorageObject = globalObject.sessionStorage;
+    49→                } catch {
+    50→                    sessionStorageObject = null;
+    51→                }
+    52→            }
+    53→            const readStorage = (key) => {
+    54→                const memoryValue = memoryStorage.get(key);
+    55→                if (memoryValue !== undefined) return memoryValue;
+    56→                try {
+    57→                    const value = sessionStorageObject ? .getItem(key);
+    58→                    if (typeof value === 'string') return value;
+    59→                } catch {}
+    60→                return memoryStorage.get(key) || null;
+    61→            };
+    62→            const writeStorage = (key, value) => {
+    63→                if (sessionStorageObject) {
+    64→                    try {
+    65→                        sessionStorageObject.setItem(key, value);
+    66→                        memoryStorage.delete(key);
+    67→                        return;
+    68→                    } catch {}
+    69→                }
+    70→                memoryStorage.set(key, value);
+    71→            };
+    72→            const removeStorage = (key) => {
+    73→                try {
+    74→                    sessionStorageObject ? .removeItem(key);
+    75→                } catch {}
+    76→                memoryStorage.delete(key);
+    77→            };
+    78→            const readJson = (key) => {
+    79→                const value = readStorage(key);
+    80→                if (!value) return undefined;
+    81→                try {
+    82→                    return JSON.parse(value);
+    83→                } catch {
+    84→                    removeStorage(key);
+    85→                    return undefined;
+    86→                }
+    87→            };
+    88→            const normalizeAssetUrl = (value) => {
+    89→                if (typeof value !== 'string' && !(value instanceof URLConstructor)) return undefined;
+    90→                try {
+    91→                    const parsed = new URLConstructor(String(value), locationObject.href);
+    92→                    if (parsed.origin !== locationObject.origin) return undefined;
+    93→                    return parsed.pathname.startsWith('/') ? parsed.pathname : `/${parsed.pathname}`;
+    94→                } catch {
+    95→                    return undefined;
+    96→                }
+    97→            };
+    98→            const sanitizeComponentName = (value) => {
+    99→                if (typeof value !== 'string') return undefined;
+   100→                const sanitized = value.trim().replace(/[^A-Za-z0-9_.:-]+/g, '_').replace(/^_+|_+$/g, '').slice(0, COMPONENT_LIMIT);
+   101→                return sanitized || undefined;
+   102→            };
+   103→            const sanitizeMetadata = (value) => {
+   104→                if (!value || typeof value !== 'object' || Array.isArray(value)) return undefined;
+   105→                const safe = {};
+   106→                Object.entries(value).slice(0, 12).forEach(([rawKey, rawValue]) => {
+   107→                    const key = rawKey.replace(/[^A-Za-z0-9_.:-]+/g, '_').slice(0, METADATA_KEY_LIMIT);
+   108→                    if (!key || /token|secret|auth|password|stack/i.test(key)) return;
+   109→                    if (typeof rawValue === 'number' || typeof rawValue === 'boolean' || rawValue === null) {
+   110→                        safe[key] = rawValue;
+   111→                        return;
+   112→                    }
+   113→                    if (typeof rawValue === 'string') {
+   114→                        const normalized = rawValue.replace(/[?#].*$/g, '').replace(/[^A-Za-z0-9 _.,:-]+/g, '_').slice(0, METADATA_VALUE_LIMIT);
+   115→                        safe[key] = normalized;
+   116→                    }
+   117→                });
+   118→                return Object.keys(safe).length ? safe : undefined;
+   119→            };
+   120→            const safeHttpStatus = (value) => {
+   121→                const status = Number(value);
+   122→                return Number.isInteger(status) && status >= 100 && status <= 599 ? status : undefined;
+   123→            };
+   124→            const extractAssetFromError = (error) => {
+   125→                if (!error || typeof error !== 'object') return undefined;
+   126→                const message = error.message;
+   127→                if (typeof message !== 'string') return undefined;
+   128→                const absolute = message.match(/https?:\/\/[^\s)'"`]+/i) ? .[0];
+   129→                const relative = message.match(/\/(?:assets|src)\/[^\s)'"`]+/i) ? .[0];
+   130→                return normalizeAssetUrl(absolute || relative);
+   131→            };
+   132→            const normalizeEntryPath = (value) => {
+   133→                if (typeof value !== 'string') return undefined;
+   134→                const withoutQuery = value.replace(/[?#].*$/g, '').replace(/^\.\//, '/');
+   135→                if (!withoutQuery || withoutQuery.includes('..')) return undefined;
+   136→                return withoutQuery.startsWith('/') ? withoutQuery : `/${withoutQuery}`;
+   137→            };
+   138→            const entryPaths = (Array.isArray(config.entryPaths) ? config.entryPaths : []).map(normalizeEntryPath).filter((value) => Boolean(value));
+   139→            const isFailureType = (value) => FAILURE_TYPES.includes(value);
+   140→            const isAssetKind = (value) => ASSET_KINDS.includes(value);
+   141→            const isAction = (value) => ACTIONS.includes(value);
+   142→            const sanitizeFailurePayload = (value) => {
+   143→                if (!value || typeof value !== 'object' || Array.isArray(value)) return undefined;
+   144→                const raw = value;
+   145→                if (typeof raw.recovery_id !== 'string' || raw.recovery_id.length > 160 || !isFailureType(raw.failure_type) || !isAssetKind(raw.asset_kind) || !isSafeBuildId(raw.current_build_id) || ![true, false, 'unknown'].includes(raw.version_skew_confirmed) || !['bootstrap', 'runtime'].includes(String(raw.phase)) || typeof raw.gameplay_active !== 'boolean' || !isAction(raw.recovery_action)) {
+   146→                    return undefined;
+   147→                }
+   148→                const assetPath = normalizeAssetUrl(raw.failed_asset_url);
+   149→                const latestBuildId = isSafeBuildId(raw.latest_build_id) ? raw.latest_build_id : undefined;
+   150→                return {
+   151→                    recovery_id: raw.recovery_id,
+   152→                    failure_type: raw.failure_type,
+   153→                    asset_kind: raw.asset_kind,
+   154→                    current_build_id: raw.current_build_id,
+   155→                    version_skew_confirmed: raw.version_skew_confirmed,
+   156→                    phase: raw.phase,
+   157→                    gameplay_active: raw.gameplay_active,
+   158→                    recovery_action: raw.recovery_action,
+   159→                    ...(assetPath && {
+   160→                        failed_asset_url: assetPath
+   161→                    }),
+   162→                    ...(sanitizeComponentName(raw.component_name) && {
+   163→                        component_name: sanitizeComponentName(raw.component_name),
+   164→                    }),
+   165→                    ...(latestBuildId && {
+   166→                        latest_build_id: latestBuildId
+   167→                    }),
+   168→                    ...(safeHttpStatus(raw.http_status) && {
+   169→                        http_status: safeHttpStatus(raw.http_status),
+   170→                    }),
+   171→                    ...(sanitizeMetadata(raw.metadata) && {
+   172→                        metadata: sanitizeMetadata(raw.metadata)
+   173→                    }),
+   174→                };
+   175→            };
+   176→            const sanitizeRecoveryPayload = (value) => {
+   177→                if (!value || typeof value !== 'object' || Array.isArray(value)) return undefined;
+   178→                const raw = value;
+   179→                if (typeof raw.recovery_id !== 'string' || raw.recovery_id.length > 160 || !isSafeBuildId(raw.current_build_id) || !['success', 'failed'].includes(String(raw.result)) || !isAction(raw.action)) {
+   180→                    return undefined;
+   181→                }
+   182→                const latestBuildId = isSafeBuildId(raw.latest_build_id) ? raw.latest_build_id : undefined;
+   183→                return {
+   184→                    recovery_id: raw.recovery_id,
+   185→                    current_build_id: raw.current_build_id,
+   186→                    result: raw.result,
+   187→                    action: raw.action,
+   188→                    ...(latestBuildId && {
+   189→                        latest_build_id: latestBuildId
+   190→                    }),
+   191→                };
+   192→            };
+   193→            const loadDedupe = () => {
+   194→                const value = readJson(DEDUPE_KEY);
+   195→                if (!Array.isArray(value)) return [];
+   196→                const currentTime = now();
+   197→                return value.filter((entry) => Boolean(entry) && typeof entry.key === 'string' && entry.key.length <= 512 && typeof entry.recoveryId === 'string' && Number.isFinite(entry.expiresAt) && entry.expiresAt > currentTime).slice(-DEDUPE_LIMIT);
+   198→            };
+   199→            const saveDedupe = (entries) => {
+   200→                writeStorage(DEDUPE_KEY, JSON.stringify(entries.slice(-DEDUPE_LIMIT)));
+   201→            };
+   202→            const loadPending = () => {
+   203→                const value = readJson(PENDING_KEY);
+   204→                if (!Array.isArray(value)) return [];
+   205→                const currentTime = now();
+   206→                const sanitized = [];
+   207→                value.forEach(raw => {
+   208→                    if (!raw || typeof raw !== 'object' || typeof raw.eventId !== 'string' || raw.eventId.length > 180 || !Number.isFinite(raw.expiresAt) || raw.expiresAt <= currentTime) {
+   209→                        return;
+   210→                    }
+   211→                    if (raw.eventName === 'bundle_loading_failed') {
+   212→                        const payload = sanitizeFailurePayload(raw.payload);
+   213→                        if (payload) {
+   214→                            sanitized.push({
+   215→                                eventId: raw.eventId,
+   216→                                eventName: raw.eventName,
+   217→                                payload,
+   218→                                expiresAt: Number(raw.expiresAt),
+   219→                            });
+   220→                        }
+   221→                    } else if (raw.eventName === 'bundle_loading_recovery') {
+   222→                        const payload = sanitizeRecoveryPayload(raw.payload);
+   223→                        if (payload) {
+   224→                            sanitized.push({
+   225→                                eventId: raw.eventId,
+   226→                                eventName: raw.eventName,
+   227→                                payload,
+   228→                                expiresAt: Number(raw.expiresAt),
+   229→                            });
+   230→                        }
+   231→                    }
+   232→                });
+   233→                const bounded = sanitized.slice(-queueLimit);
+   234→                writeStorage(PENDING_KEY, JSON.stringify(bounded));
+   235→                return bounded;
+   236→            };
+   237→            const savePending = (events) => {
+   238→                writeStorage(PENDING_KEY, JSON.stringify(events.slice(-queueLimit)));
+   239→            };
+   240→            const loadReloadAttempt = () => {
+   241→                const value = readJson(RELOAD_KEY);
+   242→                if (!value || typeof value !== 'object' || Array.isArray(value)) return undefined;
+   243→                const raw = value;
+   244→                if (!isSafeBuildId(raw.sourceBuildId) || typeof raw.recoveryId !== 'string' || !isAction(raw.action) || !Number.isFinite(raw.expiresAt) || Number(raw.expiresAt) <= now()) {
+   245→                    removeStorage(RELOAD_KEY);
+   246→                    return undefined;
+   247→                }
+   248→                return {
+   249→                    sourceBuildId: raw.sourceBuildId,
+   250→                    recoveryId: raw.recoveryId,
+   251→                    action: raw.action,
+   252→                    expiresAt: Number(raw.expiresAt),
+   253→                    ...(isSafeBuildId(raw.latestBuildId) && {
+   254→                        latestBuildId: raw.latestBuildId
+   255→                    }),
+   256→                };
+   257→            };
+   258→            const saveReloadAttempt = (attempt) => {
+   259→                writeStorage(RELOAD_KEY, JSON.stringify(attempt));
+   260→            };
+   261→            let dedupeEntries = loadDedupe();
+   262→            let pendingEvents = loadPending();
+   263→            let runtimeReady = false;
+   264→            let gameplayActive = false;
+   265→            let navigationCommitted = false;
+   266→            let sequence = 0;
+   267→            let freshBuildPromise = null;
+   268→            const records = new Map();
+   269→            const objectAliases = typeof WeakMap === 'function' ? new WeakMap() : null;
+   270→            const turnAliases = new Map();
+   271→            const createId = (prefix) => `${prefix}-${now().toString(36)}-${(++sequence).toString(36)}`;
+   272→            const makeDedupeKey = (failureType, assetPath, componentName) => [config.currentBuildId, failureType, assetPath || componentName || 'unknown'].join('|');
+   273→            const rememberAliases = (record) => {
+   274→                const expiresAt = now() + ttl;
+   275→                record.aliasKeys.forEach(key => {
+   276→                    dedupeEntries = dedupeEntries.filter(entry => entry.key !== key);
+   277→                    dedupeEntries.push({
+   278→                        key,
+   279→                        recoveryId: record.id,
+   280→                        expiresAt
+   281→                    });
+   282→                });
+   283→                dedupeEntries = dedupeEntries.slice(-DEDUPE_LIMIT);
+   284→                saveDedupe(dedupeEntries);
+   285→            };
+   286→            const enqueue = (event) => {
+   287→                if (pendingEvents.some(existing => existing.eventId === event.eventId)) return;
+   288→                pendingEvents.push({ ...event,
+   289→                    expiresAt: now() + ttl
+   290→                });
+   291→                pendingEvents = pendingEvents.slice(-queueLimit);
+   292→                savePending(pendingEvents);
+   293→            };
+   294→            const failurePayload = (record) => ({
+   295→                recovery_id: record.id,
+   296→                failure_type: record.failureType,
+   297→                asset_kind: record.assetKind,
+   298→                current_build_id: config.currentBuildId,
+   299→                version_skew_confirmed: record.versionSkew,
+   300→                phase: record.phase,
+   301→                gameplay_active: record.gameplayActive,
+   302→                recovery_action: record.action,
+   303→                ...(record.assetPath && {
+   304→                    failed_asset_url: record.assetPath
+   305→                }),
+   306→                ...(record.componentName && {
+   307→                    component_name: record.componentName
+   308→                }),
+   309→                ...(record.latestBuildId && {
+   310→                    latest_build_id: record.latestBuildId
+   311→                }),
+   312→                ...(record.httpStatus && {
+   313→                    http_status: record.httpStatus
+   314→                }),
+   315→                ...(record.metadata && {
+   316→                    metadata: record.metadata
+   317→                }),
+   318→            });
+   319→            const queueFailure = (record) => {
+   320→                if (record.failureQueued) return;
+   321→                record.failureQueued = true;
+   322→                rememberAliases(record);
+   323→                enqueue({
+   324→                    eventId: `${record.id}:failure`,
+   325→                    eventName: 'bundle_loading_failed',
+   326→                    payload: failurePayload(record),
+   327→                });
+   328→            };
+   329→            const queueOutcome = (recoveryId, result, action, currentBuildId = config.currentBuildId, latestBuildId) => {
+   330→                enqueue({
+   331→                    eventId: `${recoveryId}:recovery:${result}:${action}`,
+   332→                    eventName: 'bundle_loading_recovery',
+   333→                    payload: {
+   334→                        recovery_id: recoveryId,
+   335→                        current_build_id: currentBuildId,
+   336→                        result,
+   337→                        action,
+   338→                        ...(latestBuildId && {
+   339→                            latest_build_id: latestBuildId
+   340→                        }),
+   341→                    },
+   342→                });
+   343→            };
+   344→            const buildReloadUrl = () => {
+   345→                const url = new URLConstructor(locationObject.href);
+   346→                url.searchParams.set(RELOAD_PARAM, now().toString(36));
+   347→                return url.toString();
+   348→            };
+   349→            const readFreshBuild = async () => {
+   350→                if (!fetchFunction) return {
+   351→                    skew: 'unknown'
+   352→                };
+   353→                if (freshBuildPromise) return freshBuildPromise;
+   354→                const currentPromise = (async () => {
+   355→                    try {
+   356→                        const url = new URLConstructor(locationObject.href);
+   357→                        url.searchParams.set(CHECK_PARAM, now().toString(36));
+   358→                        url.hash = '';
+   359→                        const response = await fetchFunction(url.toString(), {
+   360→                            cache: 'no-store',
+   361→                            credentials: 'same-origin',
+   362→                            headers: {
+   363→                                Accept: 'text/html'
+   364→                            },
+   365→                        });
+   366→                        if (!response.ok) return {
+   367→                            skew: 'unknown'
+   368→                        };
+   369→                        const contentType = response.headers ? .get ? .('content-type');
+   370→                        if (contentType && !/text\/html/i.test(contentType)) {
+   371→                            return {
+   372→                                skew: 'unknown'
+   373→                            };
+   374→                        }
+   375→                        const html = await response.text();
+   376→                        const parser = new globalObject.DOMParser();
+   377→                        const parsed = parser.parseFromString(html, 'text/html');
+   378→                        const latestBuildId = parsed.querySelector('meta[name="sm-build-id"]') ? .getAttribute('content');
+   379→                        if (!isSafeBuildId(latestBuildId)) return {
+   380→                            skew: 'unknown'
+   381→                        };
+   382→                        return {
+   383→                            skew: latestBuildId === config.currentBuildId ? false : true,
+   384→                            latestBuildId,
+   385→                        };
+   386→                    } catch {
+   387→                        return {
+   388→                            skew: 'unknown'
+   389→                        };
+   390→                    }
+   391→                })();
+   392→                freshBuildPromise = currentPromise;
+   393→                try {
+   394→                    return await currentPromise;
+   395→                } finally {
+   396→                    if (freshBuildPromise === currentPromise) freshBuildPromise = null;
+   397→                }
+   398→            };
+   399→            const showFallback = (record) => {
+   400→                if (record.consumerOwned || runtimeReady || documentObject.getElementById(FALLBACK_ID)) {
+   401→                    return;
+   402→                }
+   403→                const insert = () => {
+   404→                    if (!documentObject.body || documentObject.getElementById(FALLBACK_ID)) return;
+   405→                    const container = documentObject.createElement('div');
+   406→                    container.id = FALLBACK_ID;
+   407→                    container.setAttribute('role', 'alert');
+   408→                    container.style.cssText = 'position:fixed;inset:0;z-index:2147483647;display:flex;align-items:center;justify-content:center;background:#111;color:#fff;font:16px/1.4 sans-serif;padding:24px;text-align:center';
+   409→                    const panel = documentObject.createElement('div');
+   410→                    panel.style.cssText = 'max-width:520px';
+   411→                    const title = documentObject.createElement('h1');
+   412→                    title.textContent = config.messages ? .title || 'The game could not be loaded';
+   413→                    const body = documentObject.createElement('p');
+   414→                    body.textContent = config.messages ? .body || 'Please reload the page to try the latest version.';
+   415→                    const button = documentObject.createElement('button');
+   416→                    button.type = 'button';
+   417→                    button.textContent = config.messages ? .reload || 'Reload';
+   418→                    button.style.cssText = 'font:inherit;padding:10px 18px;border:0;border-radius:6px;cursor:pointer';
+   419→                    button.addEventListener('click', () => bridge.reload(record.id), {
+   420→                        once: true
+   421→                    });
+   422→                    panel.append(title, body, button);
+   423→                    container.append(panel);
+   424→                    documentObject.body.append(container);
+   425→                };
+   426→                if (documentObject.body) insert();
+   427→                else documentObject.addEventListener('DOMContentLoaded', insert, {
+   428→                    once: true
+   429→                });
+   430→            };
+   431→            const classifyAsset = (failureType, assetKind, assetPath) => {
+   432→                if (failureType && isFailureType(failureType)) {
+   433→                    return {
+   434→                        failureType,
+   435→                        assetKind: assetKind && isAssetKind(assetKind) ? assetKind : 'unknown',
+   436→                    };
+   437→                }
+   438→                if (assetKind === 'script') {
+   439→                    const main = Boolean(assetPath && entryPaths.some(entry => assetPath === entry || assetPath.endsWith(entry)));
+   440→                    return {
+   441→                        failureType: main ? 'main_bundle' : 'script_asset',
+   442→                        assetKind
+   443→                    };
+   444→                }
+   445→                if (assetKind === 'modulepreload') {
+   446→                    return {
+   447→                        failureType: 'modulepreload_asset',
+   448→                        assetKind
+   449→                    };
+   450→                }
+   451→                if (assetKind === 'stylesheet') {
+   452→                    return {
+   453→                        failureType: 'stylesheet_asset',
+   454→                        assetKind
+   455→                    };
+   456→                }
+   457→                if (assetKind === 'worker') return {
+   458→                    failureType: 'worker_asset',
+   459→                    assetKind
+   460→                };
+   461→                return {
+   462→                    failureType: 'unknown',
+   463→                    assetKind: assetKind || 'unknown'
+   464→                };
+   465→            };
+   466→            const precedence = (failureType) => failureType === 'lazy_import' ? 3 : failureType === 'vite_preload' ? 2 : 1;
+   467→            const evaluateRecord = async (record) => {
+   468→                const sourceBuild = config.currentBuildId;
+   469→                const version = await readFreshBuild();
+   470→                record.versionSkew = version.skew;
+   471→                record.latestBuildId = version.latestBuildId;
+   472→                if (globalObject.__SM_BUNDLE_RECOVERY__ !== bridge || bridge.currentBuildId !== sourceBuild || runtimeReady || gameplayActive || record.consumerOwned || record.phase === 'runtime' || navigationCommitted) {
+   473→                    record.action = 'none';
+   474→                    queueFailure(record);
+   475→                    return;
+   476→                }
+   477→                const priorAttempt = loadReloadAttempt();
+   478→                if (version.skew === true && priorAttempt ? .sourceBuildId === sourceBuild) {
+   479→                    record.action = 'guard_blocked';
+   480→                    queueFailure(record);
+   481→                    queueOutcome(record.id, 'failed', record.action, sourceBuild, version.latestBuildId);
+   482→                    showFallback(record);
+   483→                    return;
+   484→                }
+   485→                if (version.skew === true) {
+   486→                    record.action = 'auto_reload';
+   487→                    queueFailure(record);
+   488→                    const attempt = {
+   489→                        sourceBuildId: sourceBuild,
+   490→                        recoveryId: record.id,
+   491→                        action: record.action,
+   492→                        latestBuildId: version.latestBuildId,
+   493→                        expiresAt: now() + ttl,
+   494→                    };
+   495→                    saveReloadAttempt(attempt);
+   496→                    if (globalObject.__SM_BUNDLE_RECOVERY__ !== bridge || runtimeReady || gameplayActive || navigationCommitted) {
+   497→                        return;
+   498→                    }
+   499→                    try {
+   500→                        record.cancelViteDefault ? .();
+   501→                    } catch {}
+   502→                    navigationCommitted = true;
+   503→                    navigate(buildReloadUrl());
+   504→                    return;
+   505→                }
+   506→                record.action = 'unavailable';
+   507→                queueFailure(record);
+   508→                queueOutcome(record.id, 'failed', record.action, sourceBuild, version.latestBuildId);
+   509→                showFallback(record);
+   510→            };
+   511→            const observe = (report, sourceObject, cancelViteDefault) => {
+   512→                const assetPath = normalizeAssetUrl(report.assetUrl) || extractAssetFromError(report.error);
+   513→                const componentName = sanitizeComponentName(report.componentName);
+   514→                const classification = classifyAsset(report.failureType, report.assetKind, assetPath);
+   515→                const aliasKey = makeDedupeKey(classification.failureType, assetPath, componentName);
+   516→                const currentTime = now();
+   517→                dedupeEntries = dedupeEntries.filter(entry => entry.expiresAt > currentTime);
+   518→                let record = (sourceObject && objectAliases ? .get(sourceObject)) || (assetPath ? turnAliases.get(assetPath) : undefined);
+   519→                if (!record) {
+   520→                    const persisted = dedupeEntries.find(entry => entry.key === aliasKey);
+   521→                    if (persisted) return records.get(persisted.recoveryId);
+   522→                }
+   523→                if (record) {
+   524→                    record.aliasKeys.add(aliasKey);
+   525→                    if (precedence(classification.failureType) > precedence(record.failureType)) {
+   526→                        record.failureType = classification.failureType;
+   527→                        record.assetKind = classification.assetKind;
+   528→                    }
+   529→                    record.componentName = record.componentName || componentName;
+   530→                    record.httpStatus = record.httpStatus || safeHttpStatus(report.httpStatus);
+   531→                    record.metadata = record.metadata || sanitizeMetadata(report.metadata);
+   532→                    record.consumerOwned = record.consumerOwned || Boolean(report.consumerOwned);
+   533→                    record.cancelViteDefault = record.cancelViteDefault || cancelViteDefault;
+   534→                    if (sourceObject) objectAliases ? .set(sourceObject, record);
+   535→                    return record;
+   536→                }
+   537→                record = {
+   538→                    id: createId('smblr'),
+   539→                    failureType: classification.failureType,
+   540→                    assetKind: classification.assetKind,
+   541→                    assetPath,
+   542→                    componentName,
+   543→                    phase: report.phase === 'runtime' || runtimeReady ? 'runtime' : 'bootstrap',
+   544→                    gameplayActive,
+   545→                    consumerOwned: Boolean(report.consumerOwned),
+   546→                    httpStatus: safeHttpStatus(report.httpStatus),
+   547→                    metadata: sanitizeMetadata(report.metadata),
+   548→                    versionSkew: 'unknown',
+   549→                    action: 'none',
+   550→                    aliasKeys: new Set([aliasKey]),
+   551→                    failureQueued: false,
+   552→                    cancelViteDefault,
+   553→                };
+   554→                records.set(record.id, record);
+   555→                if (sourceObject) objectAliases ? .set(sourceObject, record);
+   556→                if (assetPath) {
+   557→                    turnAliases.set(assetPath, record);
+   558→                    schedule(() => {
+   559→                        if (turnAliases.get(assetPath) === record) turnAliases.delete(assetPath);
+   560→                    }, 0);
+   561→                }
+   562→                void evaluateRecord(record);
+   563→                return record;
+   564→            };
+   565→            const bridge = {
+   566→                version: BRIDGE_VERSION,
+   567→                currentBuildId: config.currentBuildId,
+   568→                reportFailure(report) {
+   569→                    const sourceObject = report.error && typeof report.error === 'object' ? report.error : undefined;
+   570→                    const record = observe(report, sourceObject);
+   571→                    return {
+   572→                        recoveryId: record ? .id || createId('ignored'),
+   573→                        automaticReloadCommitted: navigationCommitted,
+   574→                    };
+   575→                },
+   576→                setGameplayActive(active) {
+   577→                    gameplayActive = Boolean(active);
+   578→                },
+   579→                markRuntimeReady() {
+   580→                    runtimeReady = true;
+   581→                    const attempt = loadReloadAttempt();
+   582→                    if (attempt) {
+   583→                        queueOutcome(attempt.recoveryId, 'success', attempt.action, attempt.sourceBuildId, config.currentBuildId);
+   584→                        removeStorage(RELOAD_KEY);
+   585→                    }
+   586→                    pendingEvents = loadPending();
+   587→                    return pendingEvents.map(({
+   588→                        expiresAt: _expiresAt,
+   589→                        ...event
+   590→                    }) => event);
+   591→                },
+   592→                recordRecoveryAction(recoveryId, action) {
+   593→                    if (!isAction(action) || action === 'none' || action === 'auto_reload') return false;
+   594→                    const record = records.get(recoveryId);
+   595→                    if (record ? .terminalAction) return false;
+   596→                    if (record) record.terminalAction = action;
+   597→                    if (action === 'player_reload') return true;
+   598→                    queueOutcome(recoveryId, 'failed', action);
+   599→                    return true;
+   600→                },
+   601→                reload(recoveryId) {
+   602→                    const id = recoveryId || createId('manual');
+   603→                    const record = records.get(id);
+   604→                    if (record ? .terminalAction && record.terminalAction !== 'player_reload') return;
+   605→                    if (record) record.terminalAction = 'player_reload';
+   606→                    saveReloadAttempt({
+   607→                        sourceBuildId: config.currentBuildId,
+   608→                        recoveryId: id,
+   609→                        action: 'player_reload',
+   610→                        expiresAt: now() + ttl,
+   611→                    });
+   612→                    if (navigationCommitted) return;
+   613→                    navigationCommitted = true;
+   614→                    navigate(buildReloadUrl());
+   615→                },
+   616→                acknowledgePending(eventId) {
+   617→                    pendingEvents = loadPending().filter(event => event.eventId !== eventId);
+   618→                    savePending(pendingEvents);
+   619→                },
+   620→            };
+   621→            globalObject.__SM_BUNDLE_RECOVERY__ = bridge;
+   622→            const reportElementFailure = (event) => {
+   623→                const target = event.target;
+   624→                if (!target || typeof target.tagName !== 'string') return;
+   625→                const tagName = target.tagName.toUpperCase();
+   626→                if (tagName === 'SCRIPT') {
+   627→                    const assetUrl = target.src;
+   628→                    if (!normalizeAssetUrl(assetUrl)) return;
+   629→                    observe({
+   630→                        assetKind: 'script',
+   631→                        assetUrl,
+   632→                        phase: runtimeReady ? 'runtime' : 'bootstrap',
+   633→                    }, event);
+   634→                    return;
+   635→                }
+   636→                if (tagName !== 'LINK') return;
+   637→                const link = target;
+   638→                const relation = String(link.rel || '').toLowerCase();
+   639→                if (!normalizeAssetUrl(link.href)) return;
+   640→                if (relation === 'modulepreload') {
+   641→                    observe({
+   642→                        assetKind: 'modulepreload',
+   643→                        assetUrl: link.href
+   644→                    }, event);
+   645→                } else if (relation === 'stylesheet') {
+   646→                    observe({
+   647→                        assetKind: 'stylesheet',
+   648→                        assetUrl: link.href
+   649→                    }, event);
+   650→                }
+   651→            };
+   652→            const reportViteFailure = (event) => {
+   653→                const raw = event;
+   654→                const payload = raw.payload || raw.detail;
+   655→                const payloadObject = payload && typeof payload === 'object' ? payload : {};
+   656→                const errorObject = payloadObject.error || payload;
+   657→                const assetUrl = normalizeAssetUrl(payloadObject.url || payloadObject.id);
+   658→                if (!assetUrl) return;
+   659→                observe({
+   660→                    failureType: 'vite_preload',
+   661→                    assetKind: 'script',
+   662→                    assetUrl,
+   663→                    phase: runtimeReady ? 'runtime' : 'bootstrap',
+   664→                }, errorObject && typeof errorObject === 'object' ? errorObject : event, () => raw.preventDefault ? .());
+   665→            };
+   666→            const instrumentWorker = (name) => {
+   667→                const Original = globalObject[name];
+   668→                if (typeof Original !== 'function' || typeof globalObject.Proxy !== 'function') return;
+   669→                try {
+   670→                    globalObject[name] = new globalObject.Proxy(Original, {
+   671→                        construct(target, args, newTarget) {
+   672→                            const assetUrl = args[0];
+   673→                            const normalizedAssetUrl = normalizeAssetUrl(assetUrl);
+   674→                            let worker;
+   675→                            try {
+   676→                                worker = Reflect.construct(target, args, newTarget);
+   677→                            } catch (error) {
+   678→                                if (normalizedAssetUrl) {
+   679→                                    observe({
+   680→                                        assetKind: 'worker',
+   681→                                        assetUrl: normalizedAssetUrl,
+   682→                                        error
+   683→                                    }, error && typeof error === 'object' ? error : undefined);
+   684→                                }
+   685→                                throw error;
+   686→                            }
+   687→                            if (!normalizedAssetUrl) return worker;
+   688→                            try {
+   689→                                worker.addEventListener ? .('error', (event) => observe({
+   690→                                    assetKind: 'worker',
+   691→                                    assetUrl: normalizedAssetUrl,
+   692→                                    error: event.error,
+   693→                                }, event.error && typeof event.error === 'object' ? event.error : event), {
+   694→                                    once: true
+   695→                                });
+   696→                            } catch {}
+   697→                            return worker;
+   698→                        },
+   699→                    });
+   700→                } catch {}
+   701→            };
+   702→            if (injected.installObservers !== false) {
+   703→                globalObject.addEventListener ? .('error', reportElementFailure, true);
+   704→                globalObject.addEventListener ? .('vite:preloadError', reportViteFailure);
+   705→                instrumentWorker('Worker');
+   706→                instrumentWorker('SharedWorker');
+   707→            }
+   708→            return bridge;
+   709→        })({
+   710→            "currentBuildId": "bundle-03ebca09",
+   711→            "entryPaths": ["/assets/analytics-BHBrV_Gj.js", "/assets/main-osqZAit2.js"]
+   712→        });
+   713→    </script>
+   714→
+   715→    <meta charset="utf-8">
+   716→    <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, viewport-fit=cover">
+   717→    <meta name="theme-color" content="#000000">
+   718→    <meta http-equiv="Content-Security-Policy" content="
+   719→                        default-src * vkcors: data: blob: ws: wss: gap://ready file://*;
+   720→                        style-src * vkcors: 'unsafe-inline';
+   721→                        script-src * vkcors: 'unsafe-inline' 'unsafe-eval';
+   722→                        connect-src * blob: vkcors: ws: wss: blob:;">
+   723→
+   724→    <script type="text/javascript">
+   725→        window.timestampBeforeInit = Date.now();
+   726→        // Мок платформы плейгама
+   727→    </script>
+   728→    <script type="module" crossorigin="" src="./assets/analytics-BHBrV_Gj.js"></script>
+   729→    <title>Chess Free</title>
+   730→    <script type="module" crossorigin="" src="./assets/main-osqZAit2.js"></script>
+   731→
+   732→    <link rel="stylesheet" crossorigin="" href="./assets/main-Cv7OJqtW.css">
+   733→    <link rel="canonical" href="https://www.crazygames.com/game/chess-free">
+   734→</head>
+   735→
+   736→<body oncontextmenu="return false;">
+   737→    <noscript>You need to enable JavaScript to run this app.</noscript>
+   738→    <div id="root"></div>
+   739→    <!-- Путь к главному TSX файлу -->
+   740→
+   741→
+   742→</body>
+   743→
+   744→</html>
