@@ -51,6 +51,12 @@ ADMIN_KEY=lesson-admin-2026   # change before deploying
 6. **Audio/video**: coach sets the Meet/Zoom URL ("Set call link") → both see the "Audio/Video" button in the room header.
 7. During the lesson: move list updates, illegal moves are rejected server-side, "Undo move" (coach) removes the last move, board flip available for both, checkmate/draw detection with result banner, move/capture sounds.
 
+## Quick verification (beta checks)
+
+- **Portal flow**: open `/` → request form → admin panel (default key `lesson-admin-2026`, override with `ADMIN_KEY` in `.env`) → create room → share the two tokenized links → play moves from two devices.
+- **Automated E2E**: with the dev server running, `python3 scripts/e2e_portal.py` — 28 checks covering form, admin auth, room creation, move validation, rejoin state, FEN setup, undo and permission guards.
+- **Game mirror check**: with the `repo-chess/` mirror (clone of `github.com/dvd2pe/chess`) beside the project, open **`/game-full`** — a dev-only read-only route serves the mirrored build. Verified end to end: full main menu, "Play with computer" starts a game, moves and AI replies work, zero failed network requests (see `VERIFICA-RUNTIME.md` in the mirror repo).
+
 ## API reference
 
 | Endpoint | Method | Auth | Purpose |
